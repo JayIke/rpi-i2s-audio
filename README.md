@@ -1,29 +1,55 @@
-# rpi-i2s-audio
+# I2S Microphone Overlay
 
-## my_loader
-
-This is an old school kernel module for I2S, specifically for a mono MEMs microphone. However overlays are now used.
+Testing Paul's rpi-i2s-audio device tree overlay on Pi Zero2W (Bookworm OS - 6.6.21) 03/17/24
 
 ## rpi-i2s-mic.dts
 
 This is the overlay for a MEMs microphone, specifically the SPH0645 I2C MIC.
 
-### Compile
+## Clone and Compile 
+### Clone repo without history
+``` bash
+cd ~
+git clone --depth=1 https://github.com/JayIke/rpi-i2s-audio.git
+```
+### Compile device tree into device tree blob overlay
+``` bash
+git clone --depth=1 https://github.com/JayIke/rpi-i2s-audio.git
+dtc  -I dts -O dtb -o rpi-i2s-mic.dtbo  rpi-i2s-mic.dts 
+sudo cp rpi-i2s-mic.dtbo /boot/firmware/overlays/.
+# just to be safe:
+sudo cp rpi-i2s-mic.dtbo /boot/overlays/.
+```
+### Enable overlay in config.txt
+``` bash
+echo "dtoverlay=rpi-i2s-mic" | sudo tee -a /boot/firmware/config.txt
+sudo reboot
+```
+### Check if sound card is available in alsa
+``` bash
+arecord -l && arecord -L
+```
+### Try recording a file and saving it as .wav
+``` bash
+arecord -D mic -c 2 -r 48000 -f S32_LE -V stereo -v -t wav test.wav
+```
+### ADAFRUIT SPH0645 - Stereo Hardware Configuration
 
-dtc  -I dts -O dtb -o rpi-i2s-mic.dtbo  rpi-i2s-mic.dts
-
-sudo cp rpi-i2s-mic.dtbo  /boot/overlays/.
-
-Remember to add the overlay to the config.txt file.
-
-### ADAFRUIT SPH0645
-
+  LEFT MIC
   - 3.3V Connector Pin 1
   - GND   Connector Pin 39
   - LRCL  Connector Pin 35 GPIO 19
   - DOUT  Connector Pin 37 GPIO 20
   - BCLK  Connector Pin 12 GPIO 18
-  - SEL   Connector Pin 17 3.3V
+  - SEL   Connector Pin 3.3V
+
+  RIGHT MIC
+  - 3.3V Connector Pin 1
+  - GND   Connector Pin 5?
+  - LRCL  Connector Pin 35 GPIO 19
+  - DOUT  Connector Pin 37 GPIO 20
+  - BCLK  Connector Pin 12 GPIO 18
+  - SEL   Connector Pin GND
 
 ## i2s_audio_read_test.py
 
