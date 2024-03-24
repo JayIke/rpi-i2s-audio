@@ -1,5 +1,7 @@
 # I2S Microphone Overlay
+
 Credit: Paul Creaser (Original Author)
+
 Testing Paul's rpi-i2s-audio device tree overlay on Pi Zero2W (Bookworm OS - 6.6.21) 03/17/24
 
 ## rpi-i2s-mic.dts
